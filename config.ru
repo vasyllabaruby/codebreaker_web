@@ -7,5 +7,5 @@ use Rack::Session::Cookie, :key => 'rack.session',
     :expire_after => 300,
     :secret => 'secret',
     :old_secret => 'old_secret'
-use Rack::Static, urls: ['/assets'], root: 'codebreaker-web-template'
+use Rack::Static, urls: ['/assets'], root: 'public'
 run Middlewares::Racker

@@ -14,7 +14,7 @@ module Middlewares
     end
 
     def render(template)
-      path = File.expand_path("../../../codebreaker-web-template/#{template}", __FILE__)
+      path = File.expand_path("../../../public/#{template}", __FILE__)
       ERB.new(File.read(path)).result(binding)
     end
 
