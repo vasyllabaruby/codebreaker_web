@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 require 'erb'
 require 'codebreaker/game'
 
 module Middlewares
+  # Main controller class
   class Racker
     def self.call(env)
       new(env).response.finish
@@ -48,7 +51,6 @@ module Middlewares
     end
 
     def new_game
-      @request.session[:hints_list] = []
       @request.session[:resume] = true
       @game.new_game(@request.params['player_name'], @request.params['level'].to_sym)
       @request.session[:player_name] = @request.params['player_name']
@@ -74,6 +76,7 @@ module Middlewares
       last_result = @game.play(@request.params['number'])
       return win if last_result == '++++'
       return lose if last_result =~ /^[1-6]{4}$/
+
       result(last_result)
     end
 
@@ -87,9 +90,9 @@ module Middlewares
 
     def button_class(result)
       case result
-      when '+' then "btn btn-success marks"
-      when '-' then "btn btn-primary marks"
-      else "btn btn-danger marks"
+      when '+' then 'btn btn-success marks'
+      when '-' then 'btn btn-primary marks'
+      else 'btn btn-danger marks'
       end
     end
 
@@ -164,11 +167,10 @@ module Middlewares
       @game = @request.session[:game]
       @hints_list = @request.session[:hints_list] || []
       new_hint = @game.hint
-      @hints_list.push(new_hint) unless new_hint == nil
+      @hints_list.push(new_hint) unless new_hint.nil?
       @request.session[:hints_list] = @hints_list
 
       Rack::Response.new(render('game.html.erb'))
     end
-
   end
 end
