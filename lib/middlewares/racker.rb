@@ -68,6 +68,7 @@ module Middlewares
     end
 
     def play
+      @hints_list = @request.session[:hints_list] || []
       @game = @request.session[:game]
       @request.session[:last_number] = @request.params['number']
       last_result = @game.play(@request.params['number'])
