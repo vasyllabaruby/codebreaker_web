@@ -10,6 +10,7 @@ module Middlewares
     def initialize(env)
       @request = Rack::Request.new(env)
       @game = Codebreaker::Game.new
+      @hints_list = []
     end
 
     def render(template)
@@ -25,26 +26,30 @@ module Middlewares
       when '/rules' then rules
       when '/win' then win
       when '/lose' then lose
+      when '/show_hint' then show_hint
       else Rack::Response.new('Not Found', 404)
       end
     end
 
     def menu
-      return game if session_present?
+      return Rack::Response.new(render('game.html.erb')) if resume?
 
       Rack::Response.new(render('menu.html.erb'))
     end
 
     def game
-      if session_present?
+      @redirect = 'game.html.erb'
+      if resume?
         resume_game
       else
         new_game
       end
-      Rack::Response.new(render('game.html.erb'))
+      Rack::Response.new(render(@redirect))
     end
 
     def new_game
+      @request.session[:hints_list] = []
+      @request.session[:resume] = true
       @game.new_game(@request.params['player_name'], @request.params['level'].to_sym)
       @request.session[:player_name] = @request.params['player_name']
       @request.session[:level] = @request.params['level']
@@ -52,7 +57,6 @@ module Middlewares
     end
 
     def resume_game
-      load_data
       play
       save_data
     end
@@ -63,62 +67,60 @@ module Middlewares
       @request.session[:game] = @game
     end
 
-    def load_data
-      @game = @request.session[:game]
-    end
-
-    def step
-
-    end
-
     def play
+      @game = @request.session[:game]
+      @request.session[:last_number] = @request.params['number']
       last_result = @game.play(@request.params['number'])
-      win if last_result == '++++'
-      lose if last_result =~ /^[1-6]{4}$/
+      return win if last_result == '++++'
+      return lose if last_result =~ /^[1-6]{4}$/
       result(last_result)
     end
 
-    #mock
     def result(result_str)
       result_arr = result_str.chars
-      @first = result_arr[0]
-      @second = result_arr[1]
-      @third = result_arr[2]
-      @forth = result_arr[3]
+      @first = result_arr[0] || 'X'
+      @second = result_arr[1] || 'X'
+      @third = result_arr[2] || 'X'
+      @forth = result_arr[3] || 'X'
     end
 
-    #__________________________
+    def button_class(result)
+      case result
+      when '+' then "btn btn-success marks"
+      when '-' then "btn btn-primary marks"
+      else "btn btn-danger marks"
+      end
+    end
 
     def statistics
-      return game if session_present?
+      return Rack::Response.new(render('game.html.erb')) if resume?
 
+      @number = 0
       Rack::Response.new(render('statistics.html.erb'))
     end
 
     def rules
-      return game if session_present?
+      return Rack::Response.new(render('game.html.erb')) if resume?
 
       Rack::Response.new(render('rules.html.erb'))
     end
 
     def win
-      Rack::Response.new(render('win.html.erb'))
+      @request.session[:resume] = false
+      @redirect = 'win.html.erb'
     end
 
     def lose
-      Rack::Response.new(render('lose.html.erb'))
-    end
-
-    def last_num
-      @request.params['number']
-    end
-
-    def attempts
-      @request.session[:attempts]
+      @request.session[:resume] = false
+      @redirect = 'lose.html.erb'
     end
 
     def session_present?
       @request.session.key?(:player_name)
+    end
+
+    def resume?
+      @request.session[:resume]
     end
 
     def player_name
@@ -129,8 +131,42 @@ module Middlewares
       @request.session[:level]
     end
 
+    def attempts
+      @request.session[:attempts]
+    end
+
     def hints
       @request.session[:hints]
+    end
+
+    def attempts_total
+      @request.session[:game].player.attempts_total
+    end
+
+    def hints_total
+      @request.session[:game].player.hints_total
+    end
+
+    def players_stats
+      @game.statistic
+    end
+
+    def number
+      @number += 1
+    end
+
+    def last_number
+      @request.session[:last_number] || '1234'
+    end
+
+    def show_hint
+      @game = @request.session[:game]
+      @hints_list = @request.session[:hints_list] || []
+      new_hint = @game.hint
+      @hints_list.push(new_hint) unless new_hint == nil
+      @request.session[:hints_list] = @hints_list
+
+      Rack::Response.new(render('game.html.erb'))
     end
 
   end
