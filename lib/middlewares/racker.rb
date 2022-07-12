@@ -151,10 +151,6 @@ module Middlewares
       @game.statistic
     end
 
-    def number
-      @number += 1
-    end
-
     def last_number
       @request.session[:last_number] || '1234'
     end

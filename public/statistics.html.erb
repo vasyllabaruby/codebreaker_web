@@ -37,9 +37,9 @@
             </tr>
             </thead>
             <tbody>
-            <% players_stats.each do |player| %>
+            <% players_stats.each_with_index do |player, index| %>
               <tr>
-                <th scope="row"><%= number %></th>
+                <th scope="row"><%= index + 1 %></th>
                 <td><%= player.name %></td>
                 <td><%= player.difficulty %></td>
                 <td><%= player.attempts_used %>/<%= player.attempts_total %></td>
