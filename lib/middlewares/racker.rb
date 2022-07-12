@@ -20,7 +20,7 @@ module Middlewares
       ERB.new(File.read(path)).result(binding)
     end
 
-    #
+    # rubocop:disable Metrics/CyclomaticComplexity
     def response
       case @request.path
       when '/' then menu
@@ -33,6 +33,7 @@ module Middlewares
       else Rack::Response.new('Not Found', 404)
       end
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     def menu
       return Rack::Response.new(render('game.html.erb')) if resume?
