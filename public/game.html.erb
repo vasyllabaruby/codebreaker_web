@@ -7,7 +7,7 @@
 <link href="assets/css/styles.css" rel="stylesheet">
 <script src="assets/js/jquery.min.js"></script>
 <script src="assets/js/bootstrap.min.js"></script>
-<title>Codebreaker Web</title>
+<title><%=I18n.t('page_title')%></title>
 <body>
 <section id="introduction">
   <div class="container">
@@ -15,18 +15,18 @@
       <div class="col-12 col-md-6">
         <div class="row">
           <div class="col-md-auto">
-            <h1 class="text-white title">Codebreaker 2018</h1>
+            <h1 class="text-white title"><%=I18n.t('title') %></h1>
           </div>
         </div>
         <p class="lead text-white-70">
-          Hello, <%= player_name %>!
-          Try to guess 4-digit number, that consists of numbers in a range from 1 to 6.
+          <%=I18n.t('hello')%>, <%= player_name %>!
+          <%=I18n.t('instruction')%>
         </p>
         <hr class="mb-4">
         <div class="row">
           <div class="col button">
             <button type="button" class="btn btn-primary" disabled>
-              Level:
+              <%=I18n.t('buttons.level')%>:
               <span class="badge badge-light">
                     <%= level %>
                   </span>
@@ -34,14 +34,14 @@
           </div>
           <div class="col text-center button">
             <button type="button" class="btn btn-primary" disabled>
-              Attempts:
+              <%=I18n.t('buttons.attempts')%>:
               <span class="badge badge-light"><%= attempts %></span>
             </button>
           </div>
 
           <div class="col button">
             <button type="button" class="btn btn-primary float-right">
-              Hints:
+              <%=I18n.t('buttons.hints')%>:
               <span class="badge badge-light"><%= hints %></span>
             </button>
           </div>
@@ -61,10 +61,10 @@
           <hr class="mb-4">
 
           <button type="submit" class="btn btn-primary btn-lg">
-            Submit
+            <%=I18n.t('buttons.submit')%>
           </button>
           <a href="/show_hint" class="btn btn-warning btn-lg float-right" action="/game" role="button">
-            Show hint!
+            <%=I18n.t('buttons.show_hint')%>!
             <% @hints_list.each do |hint| %>
                 <span class="badge badge-light">
                   <%= hint %>
