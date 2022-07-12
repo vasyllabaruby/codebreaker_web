@@ -2,11 +2,11 @@
 
 require 'erb'
 require 'codebreaker/game'
-require_relative '../controller/controller'
+require 'i18n'
 
 module Middlewares
   # Main controller class
-  # rubocop:disable Metrics/Metrics/ClassLength
+  # rubocop:disable Metrics/ClassLength
   class Racker
     def self.call(env)
       new(env).response.finish
@@ -15,6 +15,7 @@ module Middlewares
     def initialize(env)
       @request = Rack::Request.new(env)
       @hints_list = []
+      @result_arr = %w[X X X X]
     end
 
     def render(template)
@@ -85,7 +86,7 @@ module Middlewares
     end
 
     def result(result_str)
-      result_str = %w[X X X X] if result_str.nil?
+      result_str = 'XXXX' if result_str.nil?
       @result_arr = result_str.chars
       4.times do |i|
         @result_arr[i] = 'X' if @result_arr[i].nil?
@@ -160,7 +161,7 @@ module Middlewares
     end
 
     def hints
-      @game.hints
+      @request.session[:game].hints
     end
 
     def hints_left
@@ -178,5 +179,5 @@ module Middlewares
       Rack::Response.new(render('game.html.erb'))
     end
   end
-  # rubocop:enable Metrics/Metrics/ClassLength
+  # rubocop:enable Metrics/ClassLength
 end
