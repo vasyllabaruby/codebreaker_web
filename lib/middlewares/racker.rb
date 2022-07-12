@@ -55,6 +55,8 @@ module Middlewares
       @game.new_game(@request.params['player_name'], @request.params['level'].to_sym)
       @request.session[:player_name] = @request.params['player_name']
       @request.session[:level] = @request.params['level']
+      @request.session[:hints_list] = []
+      @result_arr = %w[X X X X]
       save_data
     end
 
@@ -67,6 +69,7 @@ module Middlewares
       @request.session[:attempts] = @game.attempts
       @request.session[:hints] = @game.hints
       @request.session[:game] = @game
+      @request.session[:result_arr] = @result_arr
     end
 
     def play
@@ -81,11 +84,11 @@ module Middlewares
     end
 
     def result(result_str)
-      result_arr = result_str.chars
-      @first = result_arr[0] || 'X'
-      @second = result_arr[1] || 'X'
-      @third = result_arr[2] || 'X'
-      @forth = result_arr[3] || 'X'
+      result_str = %w[X X X X] if result_str.nil?
+      @result_arr = result_str.chars
+      4.times do |i|
+        @result_arr[i] = 'X' if @result_arr[i].nil?
+      end
     end
 
     def button_class(result)
@@ -155,12 +158,17 @@ module Middlewares
       @request.session[:last_number] || '1234'
     end
 
+    def hints
+      @game.hints
+    end
+
     def show_hint
       @game = @request.session[:game]
       @hints_list = @request.session[:hints_list] || []
       new_hint = @game.hint
       @hints_list.push(new_hint) unless new_hint.nil?
       @request.session[:hints_list] = @hints_list
+      @result_arr = @request.session[:result_arr]
 
       Rack::Response.new(render('game.html.erb'))
     end
