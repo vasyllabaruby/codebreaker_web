@@ -139,10 +139,6 @@ module Middlewares
       @request.session[:attempts]
     end
 
-    def hints
-      @request.session[:hints]
-    end
-
     def attempts_total
       @request.session[:game].player.attempts_total
     end
