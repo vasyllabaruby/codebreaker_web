@@ -2,9 +2,11 @@
 
 require 'erb'
 require 'codebreaker/game'
+require_relative '../controller/controller'
 
 module Middlewares
   # Main controller class
+  # rubocop:disable Metrics/Metrics/ClassLength
   class Racker
     def self.call(env)
       new(env).response.finish
@@ -33,6 +35,7 @@ module Middlewares
       else Rack::Response.new('Not Found', 404)
       end
     end
+
     # rubocop:enable Metrics/CyclomaticComplexity
 
     def menu
@@ -55,8 +58,6 @@ module Middlewares
       @game = Codebreaker::Game.new
       @request.session[:resume] = true
       @game.new_game(@request.params['player_name'], @request.params['level'].to_sym)
-      @request.session[:player_name] = @request.params['player_name'] # save in game
-      @request.session[:level] = @request.params['level'] # save in game
       @request.session[:hints_list] = []
       @result_arr = %w[X X X X]
       save_data
@@ -68,8 +69,6 @@ module Middlewares
     end
 
     def save_data
-      @request.session[:attempts] = @game.attempts
-      # @request.session[:hints] = @game.hints
       @request.session[:game] = @game
       @request.session[:result_arr] = @result_arr
     end
@@ -105,7 +104,6 @@ module Middlewares
       @game = Codebreaker::Game.new
       return Rack::Response.new(render('game.html.erb')) if resume?
 
-      @number = 0
       Rack::Response.new(render('statistics.html.erb'))
     end
 
@@ -134,15 +132,15 @@ module Middlewares
     end
 
     def player_name
-      @request.session[:player_name]
+      @request.session[:game].player.name
     end
 
     def level
-      @request.session[:level]
+      @request.session[:game].player.difficulty
     end
 
     def attempts
-      @request.session[:attempts]
+      @request.session[:game].attempts
     end
 
     def attempts_total
@@ -180,4 +178,5 @@ module Middlewares
       Rack::Response.new(render('game.html.erb'))
     end
   end
+  # rubocop:enable Metrics/Metrics/ClassLength
 end
