@@ -24,19 +24,19 @@
               <button type="button" class="btn btn-primary" disabled>
                 Level:
                 <span class="badge badge-light">
-                  Middle
+                  <%= level %>
                 </span>
               </button>
               <button type="button" class="btn btn-primary" disabled>
                 Attempts Left:
                 <span class="badge badge-light">
-                  0/8
+                  <%= attempts_total - attempts %>/<%=attempts_total%>
                 </span>
               </button>
               <button type="button" class="btn btn-primary" disabled>
                 Hints Left:
                 <span class="badge badge-light">
-                  1/3
+                  <%= hints_left %>/<%=hints_total%>
                 </span>
               </button>
             </div>
@@ -50,7 +50,7 @@
                 </h3>
                 <h4 class="text-white">
                   The code was
-                  <strong>1553</strong>
+                  <strong><%= @last_result %></strong>
                 </h4>
               </div>
               <img src="assets/images/lost.gif" class="img-fluid" alt="You lose the game!">
