@@ -12,7 +12,6 @@ module Middlewares
 
     def initialize(env)
       @request = Rack::Request.new(env)
-      @game = Codebreaker::Game.new
       @hints_list = []
     end
 
@@ -21,6 +20,7 @@ module Middlewares
       ERB.new(File.read(path)).result(binding)
     end
 
+    #
     def response
       case @request.path
       when '/' then menu
@@ -51,10 +51,11 @@ module Middlewares
     end
 
     def new_game
+      @game = Codebreaker::Game.new
       @request.session[:resume] = true
       @game.new_game(@request.params['player_name'], @request.params['level'].to_sym)
-      @request.session[:player_name] = @request.params['player_name']
-      @request.session[:level] = @request.params['level']
+      @request.session[:player_name] = @request.params['player_name'] # save in game
+      @request.session[:level] = @request.params['level'] # save in game
       @request.session[:hints_list] = []
       @result_arr = %w[X X X X]
       save_data
@@ -67,7 +68,7 @@ module Middlewares
 
     def save_data
       @request.session[:attempts] = @game.attempts
-      @request.session[:hints] = @game.hints
+      # @request.session[:hints] = @game.hints
       @request.session[:game] = @game
       @request.session[:result_arr] = @result_arr
     end
@@ -76,11 +77,11 @@ module Middlewares
       @hints_list = @request.session[:hints_list] || []
       @game = @request.session[:game]
       @request.session[:last_number] = @request.params['number']
-      last_result = @game.play(@request.params['number'])
-      return win if last_result == '++++'
-      return lose if last_result =~ /^[1-6]{4}$/
+      @last_result = @game.play(@request.params['number'])
+      return win if @last_result == '++++'
+      return lose if @last_result =~ /^[1-6]{4}$/
 
-      result(last_result)
+      result(@last_result)
     end
 
     def result(result_str)
@@ -100,6 +101,7 @@ module Middlewares
     end
 
     def statistics
+      @game = Codebreaker::Game.new
       return Rack::Response.new(render('game.html.erb')) if resume?
 
       @number = 0
@@ -160,6 +162,10 @@ module Middlewares
 
     def hints
       @game.hints
+    end
+
+    def hints_left
+      @game.player.hints_used
     end
 
     def show_hint
