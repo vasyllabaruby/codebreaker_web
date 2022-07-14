@@ -13,5 +13,5 @@ use Rack::Session::Cookie, key: 'rack.session',
                            expire_after: 300,
                            secret: 'secret',
                            old_secret: 'old_secret'
-use Rack::Static, urls: ['/assets'], root: 'public'
+use Rack::Static, urls: ['/assets', '/node_modules'], root: 'public'
 run Middlewares::Racker
