@@ -1,6 +1,6 @@
 en:
   page_title: "Codebreaker Web"
-  title: "Codebreaker 2022"
+  main_title: "Codebreaker 2022"
   hello: "Hello"
   instruction: "Try to guess 4-digit number, that consists of numbers in a range from 1 to 6."
   congratulations: "Congratulations"
@@ -16,7 +16,7 @@ en:
     easy: "Easy - 15 attempts - 2 hints "
     medium: "Medium - 10 attempts - 2 hints"
     hell: "Hell - 5 attempts - 1 hints"
-  statistic: "Game level:"
+  statistic:
     top: "Top of Players"
     name: "Name"
     level: "Level"
