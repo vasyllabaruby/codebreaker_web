@@ -2,7 +2,7 @@
 
 require 'simplecov'
 SimpleCov.start do
-  minimum_coverage 95
+  minimum_coverage 90
   add_filter 'spec'
   add_filter 'vendor'
 end
