@@ -4,3 +4,4 @@ Gemfile.lock
 Statistics.data
 rg
 .idea
+node_modules
