@@ -1,0 +1,6 @@
+.history
+.DS_Store
+Statistics.data
+rg
+.idea
+node_modules
